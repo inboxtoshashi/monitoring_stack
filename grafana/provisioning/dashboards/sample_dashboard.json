@@ -1,0 +1,47 @@
+{
+  "id": null,
+  "uid": "url-app-metrics",
+  "title": "URL Shortener App Monitoring",
+  "tags": ["app", "docker", "prometheus"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Container CPU Usage",
+      "targets": [
+        {
+          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service=\"urlshortener\"}[1m])",
+          "legendFormat": "{{ container }}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "graph",
+      "title": "Container Memory Usage",
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{container_label_com_docker_compose_service=\"urlshortener\"}",
+          "legendFormat": "{{ container }}",
+          "refId": "B"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "graph",
+      "title": "API Response Count",
+      "targets": [
+        {
+          "expr": "http_requests_total",
+          "legendFormat": "{{ method }} {{ handler }}",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 }
+    }
+  ],
+  "schemaVersion": 27,
+  "version": 1
+}
