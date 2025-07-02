@@ -1,0 +1,170 @@
+{
+  "id": null,
+  "uid": "url-app-metrics",
+  "title": "URL Shortener App Monitoring",
+  "tags": ["app", "docker", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 27,
+  "version": 3,
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "EC2 CPU Usage (%)",
+      "targets": [
+        {
+          "expr": "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
+          "refId": "CPU"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 60 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 6 }
+    },
+    {
+      "type": "gauge",
+      "title": "EC2 RAM Usage (%)",
+      "targets": [
+        {
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "refId": "RAM"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 6 }
+    },
+    {
+      "type": "gauge",
+      "title": "Disk Usage (%)",
+      "targets": [
+        {
+          "expr": "100 - (node_filesystem_free_bytes{fstype=~\"ext4|xfs\"} / node_filesystem_size_bytes{fstype=~\"ext4|xfs\"}) * 100",
+          "refId": "Disk"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network I/O (Receive / Transmit)",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total[1m])",
+          "legendFormat": "Receive - {{instance}}",
+          "refId": "NetRx"
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total[1m])",
+          "legendFormat": "Transmit - {{instance}}",
+          "refId": "NetTx"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "API Request Latency (avg by endpoint)",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+          "legendFormat": "Latency",
+          "refId": "Latency"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 }
+    },
+    {
+      "type": "stat",
+      "title": "API 500 Error Rate (Last 1m)",
+      "targets": [
+        {
+          "expr": "rate(http_response_status_total{code=\"500\"}[1m])",
+          "legendFormat": "500 errors",
+          "refId": "Err500"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "req/s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.01 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 0, "y": 22, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Frontend HTTP Status (Blackbox)",
+      "targets": [
+        {
+          "expr": "probe_http_status_code{instance=\"http://url-shortener-frontend:80\"}",
+          "refId": "G"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "200": { "text": "OK" },
+                "400": { "text": "Bad Request" },
+                "500": { "text": "Server Error" }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 200 },
+              { "color": "orange", "value": 400 },
+              { "color": "red", "value": 500 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 6, "y": 22, "w": 6, "h": 4 }
+    }
+  ]
+}
