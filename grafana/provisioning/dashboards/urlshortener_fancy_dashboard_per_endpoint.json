@@ -1,0 +1,114 @@
+{
+  "id": null,
+  "uid": "urlshortener-fancy-endpoints",
+  "title": "URL Shortener API Dashboard (Detailed)",
+  "tags": [
+    "api",
+    "prometheus",
+    "flask"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 27,
+  "version": 1,
+  "panels": [
+    {
+      "type": "table",
+      "title": "API Status Table",
+      "targets": [
+        {
+          "expr": "max_over_time(http_response_status_total[1m])",
+          "legendFormat": "{{endpoint}} {{code}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "value"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "200": {
+                  "text": "200",
+                  "color": "green"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "400": {
+                  "text": "400",
+                  "color": "red"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "404": {
+                  "text": "404",
+                  "color": "red"
+                }
+              }
+            },
+            {
+              "type": "value",
+              "options": {
+                "500": {
+                  "text": "500",
+                  "color": "orange"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 400
+              },
+              {
+                "color": "orange",
+                "value": 500
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 8
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Latency by Endpoint",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+          "legendFormat": "{{endpoint}}",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 10
+      }
+    }
+  ]
+}
