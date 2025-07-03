@@ -5,7 +5,7 @@
   "tags": ["app", "docker", "prometheus"],
   "timezone": "browser",
   "schemaVersion": 27,
-  "version": 3,
+  "version": 4,
   "panels": [
     {
       "type": "gauge",
@@ -98,11 +98,11 @@
     },
     {
       "type": "timeseries",
-      "title": "API Request Latency (avg by endpoint)",
+      "title": "API Request Latency",
       "targets": [
         {
           "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
-          "legendFormat": "Latency",
+          "legendFormat": "{{endpoint}}",
           "refId": "Latency"
         }
       ],
@@ -110,7 +110,7 @@
     },
     {
       "type": "stat",
-      "title": "API 500 Error Rate (Last 1m)",
+      "title": "API 500 Error Rate",
       "targets": [
         {
           "expr": "rate(http_response_status_total{code=\"500\"}[1m])",
@@ -121,6 +121,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "req/s",
+          "nullValueMode": "null as zero",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -134,7 +135,7 @@
     },
     {
       "type": "stat",
-      "title": "Frontend HTTP Status (Blackbox)",
+      "title": "Frontend HTTP Status",
       "targets": [
         {
           "expr": "probe_http_status_code{instance=\"http://url-shortener-frontend:80\"}",

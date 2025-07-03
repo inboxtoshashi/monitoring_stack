@@ -43,9 +43,9 @@ services:
     command:
       - '--config.file=/etc/blackbox_exporter/config.yml'
 
-
 networks:
   monitoring:
+    external: true
 
 volumes:
   grafana-storage:
