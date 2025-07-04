@@ -13,11 +13,11 @@ scrape_configs:
   - job_name: 'blackbox_http_check'
     metrics_path: /probe
     params:
-      module: [http_2xx]  # Use the built-in HTTP probe module to get status for 200 response
+      module: [http_2xx]
 
     static_configs:
       - targets:
-          - http://url-shortener-frontend:80  # this is the container name + port
+          - http://url-shortener-frontend:80
 
     relabel_configs:
       - source_labels: [__address__]
@@ -25,4 +25,8 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: blackbox:9115  # blackbox exporter container name + port
+        replacement: blackbox:9115
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
