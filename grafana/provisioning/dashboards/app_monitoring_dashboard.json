@@ -1,24 +1,18 @@
 {
   "id": null,
-  "uid": "a26f9daf",
+  "uid": "app-monitoring",
   "title": "App Monitoring Dashboard",
   "timezone": "browser",
   "schemaVersion": 30,
-  "version": 1,
+  "version": 2,
   "refresh": "10s",
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
+          "color": { "mode": "palette-classic" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -39,7 +33,6 @@
       "targets": [
         {
           "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-          "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
         }
@@ -48,17 +41,11 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "fieldConfig": {
         "defaults": {
           "unit": "megabytes",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
+          "color": { "mode": "palette-classic" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -78,8 +65,7 @@
       },
       "targets": [
         {
-          "expr": "container_memory_usage_bytes / 1024 / 1024",
-          "interval": "",
+          "expr": "sum by (container) (container_memory_usage_bytes{container!=\"\", image!=\"\"}) / 1024 / 1024",
           "legendFormat": "{{container}}",
           "refId": "A"
         }
@@ -88,17 +74,11 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
       "fieldConfig": {
         "defaults": {
           "unit": "s",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
+          "color": { "mode": "palette-classic" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -119,7 +99,6 @@
       "targets": [
         {
           "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
-          "interval": "",
           "legendFormat": "{{endpoint}}",
           "refId": "A"
         }

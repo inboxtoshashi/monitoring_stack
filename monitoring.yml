@@ -7,7 +7,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9091:9090"  # Changed to avoid conflict with app
+      - "9091:9090"
     networks:
       - monitoring
 
@@ -42,6 +42,19 @@ services:
       - monitoring
     command:
       - '--config.file=/etc/blackbox_exporter/config.yml'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - monitoring
 
 networks:
   monitoring:
