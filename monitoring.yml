@@ -59,6 +59,7 @@ services:
 networks:
   monitoring:
     external: true
+    name: monitoring
 
 volumes:
   grafana-storage:
