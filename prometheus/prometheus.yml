@@ -8,7 +8,7 @@ scrape_configs:
 
   - job_name: '${APP_NAME}_backend_metrics'
     static_configs:
-      - targets: ['url-shortener-backend:9100']
+      - targets: ['url-shortener-backend:9101']
 
   - job_name: 'blackbox_http_check'
     metrics_path: /probe
