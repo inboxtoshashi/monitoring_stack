@@ -1,7 +1,7 @@
 {
   "id": null,
-  "uid": "urlshortener-fancy-endpoints",
-  "title": "URL Shortener API Dashboard",
+  "uid": "api-dashboard",
+  "title": "API Dashboard",
   "tags": [
     "api",
     "prometheus",
