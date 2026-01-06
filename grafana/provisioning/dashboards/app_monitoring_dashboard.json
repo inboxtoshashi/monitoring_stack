@@ -2,18 +2,18 @@
   "id": null,
   "uid": "app-monitoring",
   "title": "App Monitoring",
-  "tags": ["app", "docker", "prometheus"],
+  "tags": ["containers", "docker", "application"],
   "timezone": "browser",
   "schemaVersion": 27,
-  "version": 4,
+  "version": 1,
   "panels": [
     {
       "type": "gauge",
-      "title": "EC2 CPU Usage (%)",
+      "title": "Backend CPU Usage (%)",
       "targets": [
         {
-          "expr": "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
-          "refId": "CPU"
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"url-shortener-backend\"}[1m])) * 100",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
@@ -33,11 +33,59 @@
     },
     {
       "type": "gauge",
-      "title": "EC2 RAM Usage (%)",
+      "title": "Frontend CPU Usage (%)",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
-          "refId": "RAM"
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"url-shortener-frontend\"}[1m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 60 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 6 }
+    },
+    {
+      "type": "gauge",
+      "title": "Database CPU Usage (%)",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"mysql-db\"}[1m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 60 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 }
+    },
+    {
+      "type": "gauge",
+      "title": "Backend Memory Usage",
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{name=\"url-shortener-backend\"} / container_spec_memory_limit_bytes{name=\"url-shortener-backend\"} * 100",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
@@ -53,15 +101,15 @@
           }
         }
       },
-      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 6 }
+      "gridPos": { "x": 0, "y": 6, "w": 8, "h": 6 }
     },
     {
       "type": "gauge",
-      "title": "Disk Usage (%)",
+      "title": "Frontend Memory Usage",
       "targets": [
         {
-          "expr": "100 - (node_filesystem_free_bytes{fstype=~\"ext4|xfs\"} / node_filesystem_size_bytes{fstype=~\"ext4|xfs\"}) * 100",
-          "refId": "Disk"
+          "expr": "container_memory_usage_bytes{name=\"url-shortener-frontend\"} / container_spec_memory_limit_bytes{name=\"url-shortener-frontend\"} * 100",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
@@ -72,100 +120,165 @@
             "steps": [
               { "color": "green", "value": null },
               { "color": "orange", "value": 70 },
-              { "color": "red", "value": 80 }
+              { "color": "red", "value": 90 }
             ]
           }
         }
       },
-      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 }
+      "gridPos": { "x": 8, "y": 6, "w": 8, "h": 6 }
     },
     {
-      "type": "timeseries",
-      "title": "Network I/O (Receive / Transmit)",
+      "type": "gauge",
+      "title": "Database Memory Usage",
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total[1m])",
-          "legendFormat": "Receive - {{instance}}",
-          "refId": "NetRx"
-        },
-        {
-          "expr": "rate(node_network_transmit_bytes_total[1m])",
-          "legendFormat": "Transmit - {{instance}}",
-          "refId": "NetTx"
-        }
-      ],
-      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 8 }
-    },
-    {
-      "type": "timeseries",
-      "title": "API Request Latency",
-      "targets": [
-        {
-          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
-          "legendFormat": "{{endpoint}}",
-          "refId": "Latency"
-        }
-      ],
-      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 }
-    },
-    {
-      "type": "stat",
-      "title": "API 500 Error Rate",
-      "targets": [
-        {
-          "expr": "rate(http_response_status_total{code=\"500\"}[1m])",
-          "legendFormat": "500 errors",
-          "refId": "Err500"
+          "expr": "container_memory_usage_bytes{name=\"mysql-db\"} / container_spec_memory_limit_bytes{name=\"mysql-db\"} * 100",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "req/s",
-          "nullValueMode": "null as zero",
+          "unit": "percent",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
-              { "color": "red", "value": 0.01 }
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 90 }
             ]
           }
         }
       },
-      "gridPos": { "x": 0, "y": 22, "w": 6, "h": 4 }
+      "gridPos": { "x": 16, "y": 6, "w": 8, "h": 6 }
     },
     {
-      "type": "stat",
-      "title": "Frontend HTTP Status",
+      "type": "timeseries",
+      "title": "Container Memory Usage Over Time",
       "targets": [
         {
-          "expr": "probe_http_status_code{instance=\"http://url-shortener-frontend:80\"}",
-          "refId": "G"
+          "expr": "container_memory_usage_bytes{name=~\"url-shortener-backend|url-shortener-frontend|mysql-db\"}",
+          "legendFormat": "{{name}}",
+          "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Container Network Traffic",
+      "targets": [
+        {
+          "expr": "rate(container_network_receive_bytes_total{name=~\"url-shortener-backend|url-shortener-frontend\"}[1m])",
+          "legendFormat": "{{name}} - Receive",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(container_network_transmit_bytes_total{name=~\"url-shortener-backend|url-shortener-frontend\"}[1m])",
+          "legendFormat": "{{name}} - Transmit",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "x": 0, "y": 20, "w": 24, "h": 8 }
+    },
+    {
+      "type": "stat",
+      "title": "Backend Container Status",
+      "targets": [
+        {
+          "expr": "container_last_seen{name=\"url-shortener-backend\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
           "mappings": [
             {
-              "type": "value",
+              "type": "special",
               "options": {
-                "200": { "text": "OK" },
-                "400": { "text": "Bad Request" },
-                "500": { "text": "Server Error" }
+                "match": "null",
+                "result": { "text": "DOWN", "color": "red" }
               }
             }
           ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": 200 },
-              { "color": "orange", "value": 400 },
-              { "color": "red", "value": 500 }
+              { "color": "green", "value": null }
             ]
           }
         }
       },
-      "gridPos": { "x": 6, "y": 22, "w": 6, "h": 4 }
+      "gridPos": { "x": 0, "y": 28, "w": 8, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Frontend Container Status",
+      "targets": [
+        {
+          "expr": "container_last_seen{name=\"url-shortener-frontend\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": { "text": "DOWN", "color": "red" }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 8, "y": 28, "w": 8, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Database Container Status",
+      "targets": [
+        {
+          "expr": "container_last_seen{name=\"mysql-db\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "null",
+                "result": { "text": "DOWN", "color": "red" }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "x": 16, "y": 28, "w": 8, "h": 4 }
     }
   ]
 }

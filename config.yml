@@ -1,0 +1,7 @@
+# Monitoring Stack Configuration
+# Update these container names to match your application
+
+containers:
+  backend: url-shortener-backend
+  frontend: url-shortener-frontend
+  database: mysql-db
