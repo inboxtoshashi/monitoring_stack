@@ -6,7 +6,7 @@ scrape_configs:
     static_configs:
       - targets: ['node_exporter:9100']
 
-  - job_name: '${APP_NAME}_backend_metrics'
+  - job_name: 'backend_metrics'
     static_configs:
       - targets: ['url-shortener-backend:9101']
 
